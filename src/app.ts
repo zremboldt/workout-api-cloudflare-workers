@@ -1,9 +1,11 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { notFound, onError } from "stoker/middlewares";
+import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>({
   strict: false,
 });
+
+app.use(serveEmojiFavicon("💪"));
 
 app.get("/", (c) => {
   console.log(c.env.MY_VAR);
