@@ -1,4 +1,5 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { notFound } from "stoker/middlewares";
 
 const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>({
   strict: false,
@@ -21,5 +22,7 @@ app.get("/users/:id", async (c) => {
     .all();
   return c.json(user);
 });
+
+app.notFound(notFound);
 
 export default app;
