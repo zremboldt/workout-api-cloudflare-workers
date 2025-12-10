@@ -2,6 +2,10 @@
 
 This is a simple workout API built using Cloudflare Workers and D1 database.
 
+- This project was started with the `create hono` CLI.
+- Then I setup deployment on Cloudflare along with a D1 SQLite database based on what I learned from [this video](https://youtu.be/yPrQ7u3gWqk).
+- Then I used [this video](https://youtu.be/sNh9PoM9sUE) to help set up things like Drizzle, Zod, and Scalar.
+
 ## Base commands
 
 `pnpm install`
