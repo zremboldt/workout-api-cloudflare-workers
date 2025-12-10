@@ -3,11 +3,12 @@
   "name": "workout-api-cloudflare-workers",
   "main": "src/app.ts",
   "compatibility_date": "2025-12-09",
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "vars": {
-    "ENV": "development",
+    "ENVIRONMENT": "development",
+    "LOG_LEVEL": "debug",
     "MY_VAR": "my-variable"
   },
   "d1_databases": [
