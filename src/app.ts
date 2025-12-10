@@ -1,6 +1,8 @@
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 
-const app = new Hono<{ Bindings: CloudflareBindings }>({ strict: false });
+const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>({
+  strict: false,
+});
 
 app.get("/", (c) => {
   console.log(c.env.MY_VAR);
