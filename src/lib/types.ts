@@ -1,9 +1,7 @@
 import type { Logger } from "pino";
 
 export interface AppBindings {
-  Bindings: Omit<CloudflareBindings, "ENVIRONMENT"> & {
-    ENVIRONMENT: string;
-  };
+  Bindings: CloudflareBindings;
   Variables: {
     logger: Logger;
   };
