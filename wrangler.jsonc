@@ -8,8 +8,7 @@
   ],
   "vars": {
     "ENVIRONMENT": "development",
-    "LOG_LEVEL": "debug",
-    "MY_VAR": "my-variable"
+    "LOG_LEVEL": "debug"
   },
   "d1_databases": [
     {
@@ -17,7 +16,22 @@
       "database_name": "workout-api-cloudflare-workers-d1",
       "database_id": "23a9537b-7b8a-4108-9aac-66e02ad41a2d"
     }
-  ]
+  ],
+  "env": {
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production",
+        "LOG_LEVEL": "info"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "workout-api-cloudflare-workers-d1",
+          "database_id": "23a9537b-7b8a-4108-9aac-66e02ad41a2d"
+        }
+      ]
+    }
+  }
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
