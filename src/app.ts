@@ -1,16 +1,6 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
+import { createApp } from "@/lib/create-app";
 
-import type { AppBindings } from "@/lib/types";
-
-import { pinoLogger } from "@/middlewares/pino-logger";
-
-const app = new OpenAPIHono<AppBindings>({
-  strict: false,
-});
-
-app.use(serveEmojiFavicon("💪"));
-app.use(pinoLogger());
+const app = createApp();
 
 app.get("/", (c) => {
   // console.log(c.env.ENVIRONMENT);
@@ -35,8 +25,5 @@ app.get("/error", (c) => {
   c.var.logger.info("Log here!");
   throw new Error("This is a test error");
 });
-
-app.notFound(notFound);
-app.onError(onError);
 
 export default app;
