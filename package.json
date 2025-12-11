@@ -1,6 +1,8 @@
 {
   "name": "workout-api-cloudflare-workers",
   "type": "module",
+  "version": "1.0.0",
+  "description": "An API for tracking workouts and progress over time. Built with Cloudflare Workers and D1.",
   "scripts": {
     "dev": "wrangler dev | pnpm exec pino-pretty",
     "deploy": "wrangler deploy --env production --minify",

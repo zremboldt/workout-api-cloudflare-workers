@@ -1,6 +1,9 @@
+import { configureOpenAPI } from "@/lib/configure-open-api";
 import { createApp } from "@/lib/create-app";
 
 const app = createApp();
+
+configureOpenAPI(app); // This sets up our documentation endpoint
 
 app.get("/", (c) => {
   // console.log(c.env.ENVIRONMENT);
