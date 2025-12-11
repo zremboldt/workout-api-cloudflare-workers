@@ -3,15 +3,14 @@ import type { Env } from "hono-pino";
 
 import { pinoLogger as logger } from "hono-pino";
 import pino from "pino";
-import pretty from "pino-pretty";
 
 import type { AppBindings } from "@/lib/types";
 
 export function pinoLogger() {
   return ((c, next) => logger({
     pino: pino({
-      level: c.env.LOG_LEVEL || "info",
-    }, c.env.ENVIRONMENT === "production" ? undefined : pretty()),
+      level: c.env.LOG_LEVEL,
+    }),
     http: {
       reqId: () => crypto.randomUUID(),
     },
