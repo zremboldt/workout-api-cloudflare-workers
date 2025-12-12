@@ -1,5 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
+import { defaultHook } from "stoker/openapi";
 
 import type { AppBindings } from "@/lib/types";
 
@@ -8,6 +9,7 @@ import { pinoLogger } from "@/middlewares/pino-logger";
 export function createRouter() {
   return new OpenAPIHono<AppBindings>({
     strict: false,
+    defaultHook, // Formats Zod validation errors into structured error responses to client
   });
 }
 
