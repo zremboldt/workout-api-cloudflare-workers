@@ -4,11 +4,13 @@ import { jsonContent } from "stoker/openapi/helpers";
 
 import { createRouter } from "@/lib/create-app";
 
+const tags = ["Index"];
+
 export const index = createRouter()
   .openapi(createRoute({
-    tags: ["Index"], // tags are used to group endpoints together in the OpenAPI spec
     method: "get",
     path: "/",
+    tags, // tags are used to group endpoints together in the OpenAPI spec
     responses: {
       [HttpStatusCodes.OK]: jsonContent(
         z.object({
