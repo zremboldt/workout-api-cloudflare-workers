@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 
 import { createRouter } from "@/lib/create-app";
@@ -8,7 +9,7 @@ export const index = createRouter()
     method: "get",
     path: "/",
     responses: {
-      200: jsonContent(
+      [HttpStatusCodes.OK]: jsonContent(
         z.object({
           message: z.string(),
         }),
@@ -18,5 +19,5 @@ export const index = createRouter()
   }), (c) => {
     return c.json({
       message: "Workout API",
-    });
+    }, HttpStatusCodes.OK);
   });
