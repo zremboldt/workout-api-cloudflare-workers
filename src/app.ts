@@ -8,7 +8,7 @@ const routes = [
   index,
 ];
 
-configureOpenAPI(app); // This sets up our documentation endpoint
+configureOpenAPI(app); // This sets up our documentation endpoints
 
 routes.forEach((route) => {
   app.route("/", route);

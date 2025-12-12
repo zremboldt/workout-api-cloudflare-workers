@@ -15,10 +15,10 @@ export function createApp() {
   const app = createRouter();
 
   app.use(serveEmojiFavicon("💪"));
-  app.use(pinoLogger());
+  app.use(pinoLogger()); // Setting up pino middleware for logging
 
-  app.notFound(notFound);
-  app.onError(onError);
+  app.notFound(notFound); // Setting up a 404 handler
+  app.onError(onError); // Setting up a last resort error handler
 
   return app;
 }
