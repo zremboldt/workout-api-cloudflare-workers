@@ -6,6 +6,7 @@ import { createRouter } from "@/lib/create-app";
 
 export const index = createRouter()
   .openapi(createRoute({
+    tags: ["Index"], // tags are used to group endpoints together in the OpenAPI spec
     method: "get",
     path: "/",
     responses: {
