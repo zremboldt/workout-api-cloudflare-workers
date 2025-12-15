@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createSelectSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey(),
@@ -18,3 +19,16 @@ export const users = sqliteTable("users", {
 
 // Auto-generate Zod schema from Drizzle schema
 export const selectUsersSchema = createSelectSchema(users);
+
+export const insertUserSchema = createInsertSchema(users, {
+  firstName: schema => schema.min(1),
+  lastName: schema => schema.min(1),
+  email: () => z.email(),
+})
+  .omit(
+    {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  );

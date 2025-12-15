@@ -4,4 +4,5 @@ import * as handlers from "./users.handlers";
 import * as routes from "./users.routes";
 
 export const users = createRouter()
-  .openapi(routes.list, handlers.list);
+  .openapi(routes.list, handlers.list)
+  .openapi(routes.create, handlers.create);
