@@ -1,6 +1,19 @@
 # Workout API
 
-A workout tracking API built with Cloudflare Workers, D1 (SQLite), Drizzle ORM, Hono, Zod, and Scalar.
+A workout tracking API built with Hono, Cloudflare Workers, and D1 (SQLite).
+
+## Features
+
+- Fast and lightweight API framework with [Hono](https://hono.dev/)
+- Hosted on Cloudflare Workers [workers](https://developers.cloudflare.com/workers/)
+- Uses Cloudflare D1 (SQLite) database [D1](https://developers.cloudflare.com/d1/)
+- Structured logging with [pino](https://getpino.io/) / [hono-pino](https://www.npmjs.com/package/hono-pino)
+- Documented / type-safe routes with [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi)
+- Interactive API documentation with [scalar](https://scalar.com/#api-docs) / [@scalar/hono-api-reference](https://github.com/scalar/scalar/tree/main/packages/hono-api-reference)
+- Convenience methods / helpers to reduce boilerplate with [stoker](https://www.npmjs.com/package/stoker)
+- Type-safe schemas and environment variables with [zod](https://zod.dev/)
+- Single source of truth database schemas with [drizzle](https://orm.drizzle.team/docs/overview) and [drizzle-zod](https://orm.drizzle.team/docs/zod)
+- Sensible editor, formatting and linting settings with [@antfu/eslint-config](https://github.com/antfu/eslint-config)
 
 ## Run project locally
 
