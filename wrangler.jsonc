@@ -15,7 +15,7 @@
       "binding": "DB",
       "database_name": "workout-api-cloudflare-workers-d1",
       "database_id": "23a9537b-7b8a-4108-9aac-66e02ad41a2d",
-      "migrations_dir": "drizzle/migrations"
+      "migrations_dir": "src/db/migrations"
     }
   ],
   "env": {
@@ -29,7 +29,7 @@
           "binding": "DB",
           "database_name": "workout-api-cloudflare-workers-d1",
           "database_id": "23a9537b-7b8a-4108-9aac-66e02ad41a2d",
-          "migrations_dir": "drizzle/migrations"
+          "migrations_dir": "src/db/migrations"
         }
       ]
     }
