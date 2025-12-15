@@ -58,6 +58,12 @@ pnpm db:migrate:remote
 npx wrangler d1 execute workout-api-cloudflare-workers-d1 --local --command="INSERT INTO users (firstName, lastName, email) VALUES ('John', 'Doe', 'john.doe@example.com');"
 ```
 
+### Querying data
+
+```bash
+npx wrangler d1 execute workout-api-cloudflare-workers-d1 --local --command="SELECT * FROM users;"
+```
+
 ## Deployment
 
 ```bash
