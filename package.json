@@ -8,11 +8,16 @@
     "deploy": "wrangler deploy --env production --minify",
     "lint": "eslint .",
     "lint:fix": "pnpm run lint --fix",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply workout-api-cloudflare-workers-d1 --local",
+    "db:migrate:remote": "wrangler d1 migrations apply workout-api-cloudflare-workers-d1 --remote"
   },
   "dependencies": {
     "@hono/zod-openapi": "^1.1.5",
     "@scalar/hono-api-reference": "^0.9.28",
+    "drizzle-orm": "^0.45.1",
+    "drizzle-zod": "^0.8.3",
     "hono": "^4.10.7",
     "hono-pino": "^0.10.3",
     "pino": "^10.1.0",
@@ -22,6 +27,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.5.1",
     "@types/node": "^25.0.0",
+    "drizzle-kit": "^0.31.8",
     "eslint": "^9.39.1",
     "eslint-plugin-format": "^1.1.0",
     "pino-pretty": "^13.1.3",
