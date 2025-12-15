@@ -1,29 +1,37 @@
-# Workout API with Cloudflare Workers and D1
+# Workout API
 
 A workout tracking API built with Cloudflare Workers, D1 (SQLite), Drizzle ORM, Hono, Zod, and Scalar.
 
-## Setup
+## Run project locally
 
-```bash
-pnpm install
-```
-
-## Development
-
-```bash
+```shell
+pnpm i
 pnpm dev
 ```
 
-Visit `http://localhost:8787` to see your API running locally.
-
 Access the **Scalar interactive OpenAPI documentation** at `http://localhost:8787/reference`.
 
-## Initial DB setup (if starting fresh)
+## Deploy to Cloudflare Workers
 
-Create the D1 database:
+First login to Cloudflare from your web browser.
+Then:
 
-```bash
-wrangler d1 create workout-api-cloudflare-workers-d1
+```shell
+pnpm wrangler login
+pnpm run deploy
+```
+
+## Interacting with a D1 database
+
+[Create a D1 database](https://developers.cloudflare.com/workers/wrangler/commands/#d1-create)
+[Execute a D1 database](https://developers.cloudflare.com/workers/wrangler/commands/#d1-execute)
+
+### Initial DB setup (if starting fresh)
+
+Create the database
+
+```shell
+npx wrangler d1 create workout-api-cloudflare-workers-d1
 ```
 
 After creation, update `wrangler.jsonc` with the database ID, then run migrations:
@@ -32,42 +40,30 @@ After creation, update `wrangler.jsonc` with the database ID, then run migration
 pnpm db:migrate:local
 ```
 
-## Database Management
+### Database Management
 
-### Generate migrations from schema changes
+Generate new migrations whenever the schema changes
 
 ```bash
 pnpm db:generate
 ```
 
-### Apply migrations to local database
+Apply migrations to local database
 
 ```bash
 pnpm db:migrate:local
 ```
 
-### Apply migrations to production database
+Apply migrations to production database
 
 ```bash
 pnpm db:migrate:remote
 ```
 
-### Adding test data
+Delete the database (if needed)
 
 ```bash
-npx wrangler d1 execute workout-api-cloudflare-workers-d1 --local --command="INSERT INTO users (firstName, lastName, email) VALUES ('John', 'Doe', 'john.doe@example.com');"
-```
-
-### Querying data
-
-```bash
-npx wrangler d1 execute workout-api-cloudflare-workers-d1 --local --command="SELECT * FROM users;"
-```
-
-## Deployment
-
-```bash
-pnpm deploy
+npx wrangler d1 delete workout-api-cloudflare-workers-d1
 ```
 
 ## Type Generation
