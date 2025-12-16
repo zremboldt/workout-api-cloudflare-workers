@@ -7,7 +7,7 @@ import type { AppRouteHandler } from "@/lib/types";
 
 import * as schema from "@/db";
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute } from "./users.routes";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from "./users.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const db = drizzle(c.env.DB, { schema });
@@ -58,4 +58,20 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
   }
 
   return c.json(user, HttpStatusCodes.OK);
+};
+
+export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db.delete(schema.users)
+    .where(eq(schema.users.id, id));
+
+  if (result.meta.changes === 0) {
+    return c.json(
+      { message: HttpStatusPhrases.NOT_FOUND },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+
+  return c.body(null, HttpStatusCodes.NO_CONTENT);
 };
