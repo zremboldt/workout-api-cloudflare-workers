@@ -1,3 +1,5 @@
+import type { Schema } from "hono";
+
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
 import { defaultHook } from "stoker/openapi";
@@ -25,6 +27,6 @@ export function createApp() {
   return app;
 }
 
-export function createTestApp(router: AppOpenAPI) {
+export function createTestApp<S extends Schema>(router: AppOpenAPI<S>) {
   return createApp().route("/", router);
 }

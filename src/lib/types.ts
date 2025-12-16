@@ -1,4 +1,5 @@
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
+import type { Schema } from "hono";
 import type { Logger } from "pino";
 
 export interface AppBindings {
@@ -8,6 +9,7 @@ export interface AppBindings {
   };
 }
 
-export type AppOpenAPI = OpenAPIHono<AppBindings>;
+// eslint-disable-next-line ts/no-empty-object-type
+export type AppOpenAPI<S extends Schema = {}> = OpenAPIHono<AppBindings, S>;
 
 export type AppRouteHandler<R extends RouteConfig> = RouteHandler<R, AppBindings>;
