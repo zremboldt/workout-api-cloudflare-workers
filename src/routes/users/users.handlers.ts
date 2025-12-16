@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import * as HttpStatusPhrases from "stoker/http-status-phrases";
@@ -6,7 +7,7 @@ import type { AppRouteHandler } from "@/lib/types";
 
 import * as schema from "@/db";
 
-import type { CreateRoute, GetOneRoute, ListRoute } from "./users.routes";
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute } from "./users.routes";
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const db = drizzle(c.env.DB, { schema });
@@ -29,6 +30,25 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
       return operators.eq(fields.id, id); // Find user where id field matches the id param
     },
   });
+
+  if (!user) {
+    return c.json(
+      { message: HttpStatusPhrases.NOT_FOUND },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+
+  return c.json(user, HttpStatusCodes.OK);
+};
+
+export const patch: AppRouteHandler<PatchRoute> = async (c) => {
+  const { id } = c.req.valid("param");
+  const updates = c.req.valid("json");
+  const db = drizzle(c.env.DB, { schema });
+  const [user] = await db.update(schema.users)
+    .set(updates)
+    .where(eq(schema.users.id, id))
+    .returning();
 
   if (!user) {
     return c.json(
