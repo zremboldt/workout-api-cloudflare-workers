@@ -26,19 +26,17 @@ describe("users", () => {
     const response = await client.users.$get();
     expect(response.status).toBe(200);
 
-    if (response.status === 200) {
-      const json = await response.json();
-      expectTypeOf(json).toBeArray();
-      expect(json).toHaveLength(1);
-      expect(json[0]).toMatchObject(testUser);
-    }
+    const json = await response.json();
+    expectTypeOf(json).toBeArray();
+    expect(json).toHaveLength(1);
+    expect(json[0]).toMatchObject(testUser);
   });
 
   it("creates a user", async () => {
     const newUser = {
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane.smith@example.com",
+      firstName: "Mindy",
+      lastName: "Park",
+      email: "mindy.park@test.com",
     };
 
     const response = await client.users.$post({
@@ -46,9 +44,7 @@ describe("users", () => {
     });
 
     expect(response.status).toBe(200);
-    if (response.status === 200) {
-      const json = await response.json();
-      expect(json).toMatchObject(newUser);
-    }
+    const json = await response.json();
+    expect(json).toMatchObject(newUser);
   });
 });
