@@ -1,50 +1,49 @@
-import { env } from "cloudflare:test";
-import { testClient } from "hono/testing";
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { SELF } from "cloudflare:test";
+import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 
-import { createTestApp } from "@/lib/create-app";
+describe("users", () => {
+  const testUser = {
+    firstName: "Mark",
+    lastName: "Watney",
+    email: "mark.watney@test.com",
+  };
 
-import { users } from "./users.index";
-
-const client = testClient(createTestApp(users), { env });
-
-describe("users list", () => {
-  // it("responds with an array", async () => {
-  //   const testRouter = createTestApp(users);
-  //   const response = await testRouter.request("/users", {}, env);
-  //   const result = await response.json();
-  //   // @ts-expect-error
-  //   expectTypeOf(result).toBeArray();
-  // });
-
-  const firstName = "John";
-  const lastName = "Maxfield";
-  const email = "john.maxfield@example.com";
-
-  it("post /users creates a user", async () => {
-    const response = await client.users.$post({
-      json: {
-        firstName,
-        lastName,
-        email,
-      },
+  beforeEach(async () => {
+    // Test DB is ephemeral, so we seed a user for each test
+    await SELF.fetch("https://test/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(testUser),
     });
-    expect(response.status).toBe(200);
-    if (response.status === 200) {
-      const json = await response.json();
-      expect(json.firstName).toBe(firstName);
-      expect(json.lastName).toBe(lastName);
-      expect(json.email).toBe(email);
-    }
   });
 
-  it("get /users lists all users", async () => {
-    const response = await client.users.$get();
+  it("lists all users", async () => {
+    const response = await SELF.fetch("https://test/users");
     expect(response.status).toBe(200);
-    if (response.status === 200) {
-      const json = await response.json();
-      expectTypeOf(json).toBeArray();
-      expect(json.length).toBe(1);
-    }
+
+    const users = await response.json();
+    expectTypeOf(users).toBeArray();
+    expect(users).toHaveLength(1);
+    expect(users[0]).toMatchObject(testUser);
+  });
+
+  it("creates a user", async () => {
+    const response = await SELF.fetch("https://test/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane.smith@example.com",
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    const user = await response.json();
+    expect(user).toMatchObject({
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane.smith@example.com",
+    });
   });
 });
