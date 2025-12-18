@@ -6,22 +6,33 @@ import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import { ZOD_ERROR_MESSAGES } from "@/lib/constants";
 import { createApp } from "@/lib/create-app";
 
+import { users } from "../users/users.index";
 import { exercises } from "./exercises.index";
 
-const client = testClient(createApp().route("/", exercises), env);
+// Create app with both users and exercises routes because exercises depend on users (for foreign key)
+const app = createApp()
+  .route("/", users)
+  .route("/", exercises);
 
-// TODO
-// Finish converting this test file from users to exercises
+const client = testClient(app, env);
 
 describe("exercises routes", () => {
   let exerciseId: number;
   const testExercise = {
-    firstName: "Mark",
-    lastName: "Watney",
-    email: "mark.watney@test.com",
+    name: "Bench Press",
+    description: "Compound chest exercise",
   };
 
   beforeEach(async () => {
+    // Create a test user first (since exercises require a userId)
+    await client.users.$post({
+      json: {
+        firstName: "Test",
+        lastName: "User",
+        email: "test@example.com",
+      },
+    });
+
     // Test DB is ephemeral, so we seed an exercise for each test
     const response = await client.exercises.$post({
       json: testExercise,
@@ -46,22 +57,20 @@ describe("exercises routes", () => {
     it("validates the body when creating", async () => {
       const response = await client.exercises.$post({
         json: {
-          firstName: "",
-          lastName: "Kapoor",
-          email: "test@example.com",
+          name: "",
+          description: "Some description",
         },
       });
       expect(response.status).toBe(422);
       const json: any = await response.json();
-      expect(json.error.issues[0].path[0]).toBe("firstName");
+      expect(json.error.issues[0].path[0]).toBe("name");
       expect(json.error.issues[0].message).toBe(ZOD_ERROR_MESSAGES.TOO_SMALL);
     });
 
-    it("creates a exercise", async () => {
+    it("creates an exercise", async () => {
       const newExercise = {
-        firstName: "Mindy",
-        lastName: "Park",
-        email: "mindy.park@test.com",
+        name: "Squat",
+        description: "Compound leg exercise",
       };
 
       const response = await client.exercises.$post({
@@ -70,9 +79,8 @@ describe("exercises routes", () => {
 
       expect(response.status).toBe(200);
       const json: any = await response.json();
-      expect(json.firstName).toBe(newExercise.firstName);
-      expect(json.lastName).toBe(newExercise.lastName);
-      expect(json.email).toBe(newExercise.email);
+      expect(json.name).toBe(newExercise.name);
+      expect(json.description).toBe(newExercise.description);
     });
   });
 
@@ -108,9 +116,8 @@ describe("exercises routes", () => {
       });
       expect(response.status).toBe(200);
       const json: any = await response.json();
-      expect(json.firstName).toBe(testExercise.firstName);
-      expect(json.lastName).toBe(testExercise.lastName);
-      expect(json.email).toBe(testExercise.email);
+      expect(json.name).toBe(testExercise.name);
+      expect(json.description).toBe(testExercise.description);
     });
   });
 
@@ -121,12 +128,12 @@ describe("exercises routes", () => {
           id: exerciseId,
         },
         json: {
-          firstName: "",
+          name: "",
         },
       });
       expect(response.status).toBe(422);
       const json: any = await response.json();
-      expect(json.error.issues[0].path[0]).toBe("firstName");
+      expect(json.error.issues[0].path[0]).toBe("name");
       expect(json.error.issues[0].code).toBe("too_small");
     });
 
@@ -136,7 +143,7 @@ describe("exercises routes", () => {
           id: "wat",
         },
         json: {
-          firstName: "Updated",
+          name: "Updated",
         },
       });
       expect(response.status).toBe(422);
@@ -151,7 +158,7 @@ describe("exercises routes", () => {
           id: 999999,
         },
         json: {
-          firstName: "Updated",
+          name: "Updated",
         },
       });
       expect(response.status).toBe(404);
@@ -159,20 +166,19 @@ describe("exercises routes", () => {
       expect(json.message).toBe(HttpStatusPhrases.NOT_FOUND);
     });
 
-    it("updates a single property of a exercise", async () => {
+    it("updates a single property of an exercise", async () => {
       const response = await client.exercises[":id"].$patch({
         param: {
           id: exerciseId,
         },
         json: {
-          firstName: "Mark",
+          name: "Updated Bench Press",
         },
       });
       expect(response.status).toBe(200);
       const json: any = await response.json();
-      expect(json.firstName).toBe("Mark");
-      expect(json.lastName).toBe(testExercise.lastName);
-      expect(json.email).toBe(testExercise.email);
+      expect(json.name).toBe("Updated Bench Press");
+      expect(json.description).toBe(testExercise.description);
     });
   });
 
@@ -200,7 +206,7 @@ describe("exercises routes", () => {
       expect(json.message).toBe(HttpStatusPhrases.NOT_FOUND);
     });
 
-    it("removes a exercise", async () => {
+    it("removes an exercise", async () => {
       const response = await client.exercises[":id"].$delete({
         param: {
           id: exerciseId,
