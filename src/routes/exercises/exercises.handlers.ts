@@ -18,7 +18,15 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
   const db = drizzle(c.env.DB, { schema });
   const exercise = c.req.valid("json");
-  const [inserted] = await db.insert(schema.exercises).values(exercise).returning();
+
+  // TODO: After auth is set up,
+  // we'll set the userId here from our auth context. Something like:
+  // const userId = c.get('userId'); // from auth middleware
+
+  // For now, we'll just hardcode a userId for testing purposes.
+  const userId = 1;
+
+  const [inserted] = await db.insert(schema.exercises).values({ ...exercise, userId }).returning();
   return c.json(inserted, HttpStatusCodes.OK);
 };
 
