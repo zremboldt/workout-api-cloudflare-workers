@@ -31,6 +31,6 @@ export const insertUserSchema = createInsertSchema(users, {
       createdAt: true,
       updatedAt: true,
     },
-  );
+  ); // omit means that these fields will not be accepted by the API when creating a new exercise because the server will handle setting them.
 
 export const patchUserSchema = insertUserSchema.partial();

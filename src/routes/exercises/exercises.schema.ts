@@ -2,17 +2,15 @@ import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-// TODO
-// userId should be a foreign key that references users table. I want a user to have zero or many exercises.
-// Do we need to set a default value for userId in this schema like we do with createdAt? Or do we set it manually on create?
-// Should name be varchar with a length limit?
-// description is optional. How will that playout down in the insertExerciseSchema validation?
-// Should I omit description from insertExerciseSchema if it's optional?
-// Should I omit userId from insertExerciseSchema and set it automatically?
+import { users } from "../users/users.schema";
 
 export const exercises = sqliteTable("exercises", {
   id: integer("id").primaryKey(),
-  userId: integer("userId"),
+  userId: integer("userId")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade", // If a user is deleted, delete their exercises too
+    }), // .references creates a foreign key to the users table
   name: text("name").notNull(),
   description: text("description"),
   createdAt: integer("createdAt", { mode: "timestamp" })
@@ -28,15 +26,16 @@ export const exercises = sqliteTable("exercises", {
 export const selectExercisesSchema = createSelectSchema(exercises);
 
 export const insertExerciseSchema = createInsertSchema(exercises, {
-  name: schema => schema.min(1),
-  description: schema => schema.min(1),
+  name: schema => schema.min(1).max(255),
+  description: schema => schema.max(1000).optional(),
 })
   .omit(
     {
       id: true,
+      userId: true,
       createdAt: true,
       updatedAt: true,
     },
-  );
+  ); // omit means that these fields will not be accepted by the API when creating a new exercise because the server will handle setting them.
 
 export const patchExerciseSchema = insertExerciseSchema.partial();
