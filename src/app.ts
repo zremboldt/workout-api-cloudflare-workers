@@ -1,5 +1,6 @@
 import { configureOpenAPI } from "@/lib/configure-open-api";
 import { createApp } from "@/lib/create-app";
+import { exercises } from "@/routes/exercises/exercises.index";
 import { index } from "@/routes/index.route";
 import { users } from "@/routes/users/users.index";
 
@@ -8,6 +9,7 @@ const app = createApp();
 const routes = [
   index,
   users,
+  exercises,
 ] as const; // Lets TypeScript know that this array is not going to change at runtime, which allows us to get the type out of it.
 
 configureOpenAPI(app); // This sets up our documentation endpoints
