@@ -15,6 +15,13 @@
       "when": 1766030419420,
       "tag": "0001_adorable_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1766115160697,
+      "tag": "0002_same_lucky_pierre",
+      "breakpoints": true
     }
   ]
 }
