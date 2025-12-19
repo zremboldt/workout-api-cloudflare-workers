@@ -68,6 +68,7 @@ pnpm db:migrate:local
 ```
 
 Apply migrations to production database
+(You may need to run `pnpm wrangler login` first)
 
 ```bash
 pnpm db:migrate:remote
