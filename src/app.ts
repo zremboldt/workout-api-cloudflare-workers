@@ -3,6 +3,7 @@ import { createApp } from "@/lib/create-app";
 import { exercises } from "@/routes/exercises/exercises.index";
 import { index } from "@/routes/index.route";
 import { sets } from "@/routes/sets/sets.index";
+import { tags } from "@/routes/tags/tags.index";
 import { users } from "@/routes/users/users.index";
 
 const app = createApp();
@@ -10,6 +11,7 @@ const app = createApp();
 const routes = [
   index,
   users,
+  tags,
   exercises,
   sets,
 ] as const; // Lets TypeScript know that this array is not going to change at runtime, which allows us to get the type out of it.

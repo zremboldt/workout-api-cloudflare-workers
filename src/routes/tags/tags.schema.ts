@@ -2,20 +2,15 @@ import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-import { tags } from "../tags/tags.schema";
 import { users } from "../users/users.schema";
 
-export const exercises = sqliteTable("exercises", {
+export const tags = sqliteTable("tags", {
   id: integer("id").primaryKey(),
   userId: integer("userId")
     .notNull()
     .references(() => users.id, {
-      onDelete: "cascade", // If a user is deleted, delete their exercises too
-    }), // .references creates a foreign key to the users table
-  tagId: integer("tagId")
-    .references(() => tags.id, {
-      onDelete: "set null", // If a tag is deleted, set tagId to null (exercises become untagged)
-    }), // Optional foreign key to tags table
+      onDelete: "cascade", // If a user is deleted, delete their tags too
+    }),
   name: text("name").notNull(),
   description: text("description"),
   createdAt: integer("createdAt", { mode: "timestamp" })
@@ -28,10 +23,9 @@ export const exercises = sqliteTable("exercises", {
 });
 
 // Auto-generate Zod schema from Drizzle schema
-export const selectExercisesSchema = createSelectSchema(exercises);
+export const selectTagsSchema = createSelectSchema(tags);
 
-export const insertExerciseSchema = createInsertSchema(exercises, {
-  tagId: schema => schema.optional(),
+export const insertTagSchema = createInsertSchema(tags, {
   name: schema => schema.min(1).max(255),
   description: schema => schema.max(1000).optional(),
 })
@@ -42,6 +36,6 @@ export const insertExerciseSchema = createInsertSchema(exercises, {
       createdAt: true,
       updatedAt: true,
     },
-  ); // omit means that these fields will not be accepted by the API when creating a new exercise because the server will handle setting them.
+  ); // omit means that these fields will not be accepted by the API when creating a new tag because the server will handle setting them.
 
-export const patchExerciseSchema = insertExerciseSchema.partial();
+export const patchTagSchema = insertTagSchema.partial();
