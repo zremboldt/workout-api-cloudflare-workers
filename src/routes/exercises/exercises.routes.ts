@@ -124,20 +124,20 @@ export const remove = createRoute({
 
 // Param schema for routes with both id and tagId
 const ExerciseTagParamsSchema = z.object({
-  id: z.string().openapi({
+  id: z.coerce.number().openapi({
     param: {
       name: "id",
       in: "path",
     },
-    example: "1",
-  }).pipe(z.coerce.number()), // params always come as strings, so here we coerce to number
-  tagId: z.string().openapi({
+    example: 1,
+  }),
+  tagId: z.coerce.number().openapi({
     param: {
       name: "tagId",
       in: "path",
     },
-    example: "2",
-  }).pipe(z.coerce.number()),
+    example: 2,
+  }),
 });
 
 // Route to add a tag to an exercise
