@@ -1,8 +1,9 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-import { tags } from "../tags/tags.schema";
+import { exercisesTags } from "@/db/exercises-tags.schema";
+
 import { users } from "../users/users.schema";
 
 export const exercises = sqliteTable("exercises", {
@@ -12,10 +13,6 @@ export const exercises = sqliteTable("exercises", {
     .references(() => users.id, {
       onDelete: "cascade", // If a user is deleted, delete their exercises too
     }), // .references creates a foreign key to the users table
-  tagId: integer("tagId")
-    .references(() => tags.id, {
-      onDelete: "set null", // If a tag is deleted, set tagId to null (exercises become untagged)
-    }), // Optional foreign key to tags table
   name: text("name").notNull(),
   description: text("description"),
   createdAt: integer("createdAt", { mode: "timestamp" })
@@ -27,11 +24,15 @@ export const exercises = sqliteTable("exercises", {
     .$onUpdate(() => new Date()),
 });
 
+// Define relations for Drizzle queries
+export const exercisesRelations = relations(exercises, ({ many }) => ({
+  exercisesTags: many(exercisesTags),
+}));
+
 // Auto-generate Zod schema from Drizzle schema
 export const selectExercisesSchema = createSelectSchema(exercises);
 
 export const insertExerciseSchema = createInsertSchema(exercises, {
-  tagId: schema => schema.optional(),
   name: schema => schema.min(1).max(255),
   description: schema => schema.max(1000).optional(),
 })

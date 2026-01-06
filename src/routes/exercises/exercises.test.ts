@@ -6,21 +6,28 @@ import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 import { ZOD_ERROR_MESSAGES } from "@/lib/constants";
 import { createApp } from "@/lib/create-app";
 
+import { tags } from "../tags/tags.index";
 import { users } from "../users/users.index";
 import { exercises } from "./exercises.index";
 
-// Create app with both users and exercises routes because exercises depend on users (for foreign key)
+// Create app with users, exercises, and tags routes
 const app = createApp()
   .route("/", users)
-  .route("/", exercises);
+  .route("/", exercises)
+  .route("/", tags);
 
 const client = testClient(app, env);
 
 describe("exercises routes", () => {
   let exerciseId: number;
+  let tagId: number;
   const testExercise = {
     name: "Bench Press",
     description: "Compound chest exercise",
+  };
+  const testTag = {
+    name: "Chest",
+    description: "Chest exercises",
   };
 
   beforeEach(async () => {
@@ -32,6 +39,13 @@ describe("exercises routes", () => {
         email: "test@example.com",
       },
     });
+
+    // Create a test tag
+    const tagResponse = await client.tags.$post({
+      json: testTag,
+    });
+    const tagJson: any = await tagResponse.json();
+    tagId = tagJson.id;
 
     // Test DB is ephemeral, so we seed an exercise for each test
     const response = await client.exercises.$post({
@@ -213,6 +227,144 @@ describe("exercises routes", () => {
         },
       });
       expect(response.status).toBe(204);
+    });
+  });
+
+  describe("post /exercises/:id/tags/:tagId", () => {
+    it("adds a tag to an exercise", async () => {
+      const response = await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+      expect(response.status).toBe(201);
+      const json: any = await response.json();
+      expect(json.tags).toBeDefined();
+      expect(json.tags.length).toBe(1);
+      expect(json.tags[0].id).toBe(tagId);
+    });
+
+    it("returns 404 when exercise not found", async () => {
+      const response = await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: 999999,
+          tagId,
+        },
+      });
+      expect(response.status).toBe(404);
+      const json: any = await response.json();
+      expect(json.message).toBe("Exercise not found");
+    });
+
+    it("returns 404 when tag not found", async () => {
+      const response = await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId: 999999,
+        },
+      });
+      expect(response.status).toBe(404);
+      const json: any = await response.json();
+      expect(json.message).toBe("Tag not found");
+    });
+
+    it("returns 409 when tag already added", async () => {
+      // Add tag first
+      await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+
+      // Try to add again
+      const response = await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+      expect(response.status).toBe(409);
+      const json: any = await response.json();
+      expect(json.message).toBe("Tag already added to exercise");
+    });
+  });
+
+  describe("delete /exercises/:id/tags/:tagId", () => {
+    it("removes a tag from an exercise", async () => {
+      // Add tag first
+      await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+
+      // Remove it
+      const response = await client.exercises[":id"].tags[":tagId"].$delete({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+      expect(response.status).toBe(204);
+    });
+
+    it("returns 404 when association not found", async () => {
+      const response = await client.exercises[":id"].tags[":tagId"].$delete({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+      expect(response.status).toBe(404);
+      const json: any = await response.json();
+      expect(json.message).toBe("Exercise, tag, or association not found");
+    });
+  });
+
+  describe("exercises with tags", () => {
+    it("lists exercises with their tags", async () => {
+      // Add tag to exercise
+      await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+
+      const response = await client.exercises.$get();
+      expect(response.status).toBe(200);
+
+      const json: any = await response.json();
+      expect(Array.isArray(json)).toBe(true);
+      const exerciseWithTag = json.find((e: any) => e.id === exerciseId);
+      expect(exerciseWithTag.tags).toBeDefined();
+      expect(exerciseWithTag.tags.length).toBe(1);
+      expect(exerciseWithTag.tags[0].name).toBe(testTag.name);
+    });
+
+    it("gets a single exercise with its tags", async () => {
+      // Add tag to exercise
+      await client.exercises[":id"].tags[":tagId"].$post({
+        param: {
+          id: exerciseId,
+          tagId,
+        },
+      });
+
+      const response = await client.exercises[":id"].$get({
+        param: {
+          id: exerciseId,
+        },
+      });
+      expect(response.status).toBe(200);
+
+      const json: any = await response.json();
+      expect(json.tags).toBeDefined();
+      expect(json.tags.length).toBe(1);
+      expect(json.tags[0].name).toBe(testTag.name);
     });
   });
 });

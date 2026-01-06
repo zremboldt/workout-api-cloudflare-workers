@@ -11,8 +11,24 @@ import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } fro
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const db = drizzle(c.env.DB, { schema });
-  const tags = await db.query.tags.findMany();
-  return c.json(tags);
+  const tags = await db.query.tags.findMany({
+    with: {
+      exercisesTags: {
+        with: {
+          exercise: true,
+        },
+      },
+    },
+  });
+
+  // Transform the data to have an exercises array instead of exercisesTags
+  const tagsWithExercises = tags.map(tag => ({
+    ...tag,
+    exercises: tag.exercisesTags.map(et => et.exercise),
+    exercisesTags: undefined,
+  }));
+
+  return c.json(tagsWithExercises);
 };
 
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
@@ -37,6 +53,13 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     where: (fields, operators) => {
       return operators.eq(fields.id, id); // Find tag where id field matches the id param
     },
+    with: {
+      exercisesTags: {
+        with: {
+          exercise: true,
+        },
+      },
+    },
   });
 
   if (!tag) {
@@ -46,7 +69,14 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
     );
   }
 
-  return c.json(tag, HttpStatusCodes.OK);
+  // Transform the data to have an exercises array instead of exercisesTags
+  const tagWithExercises = {
+    ...tag,
+    exercises: tag.exercisesTags.map(et => et.exercise),
+    exercisesTags: undefined,
+  };
+
+  return c.json(tagWithExercises, HttpStatusCodes.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {

@@ -118,8 +118,79 @@ export const remove = createRoute({
   },
 });
 
+// ++++++++++++++++++++++++++++++++++++++++++++++
+// Routes for adding/removing tags to/from exercises
+// ++++++++++++++++++++++++++++++++++++++++++++++
+
+// Param schema for routes with both id and tagId
+const ExerciseTagParamsSchema = z.object({
+  id: z.string().openapi({
+    param: {
+      name: "id",
+      in: "path",
+    },
+    example: "1",
+  }).pipe(z.coerce.number()), // params always come as strings, so here we coerce to number
+  tagId: z.string().openapi({
+    param: {
+      name: "tagId",
+      in: "path",
+    },
+    example: "2",
+  }).pipe(z.coerce.number()),
+});
+
+// Route to add a tag to an exercise
+export const addTag = createRoute({
+  path: "/exercises/{id}/tags/{tagId}",
+  method: "post",
+  request: {
+    params: ExerciseTagParamsSchema,
+  },
+  tags,
+  responses: {
+    [HttpStatusCodes.CREATED]: jsonContent(
+      selectExercisesSchema,
+      "Tag added to exercise",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Exercise or tag not found",
+    ),
+    [HttpStatusCodes.CONFLICT]: jsonContent(
+      z.object({ message: z.string() }),
+      "Tag already added to exercise",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      z.object({ message: z.string() }),
+      "Internal server error",
+    ),
+  },
+});
+
+// Route to remove a tag from an exercise
+export const removeTag = createRoute({
+  path: "/exercises/{id}/tags/{tagId}",
+  method: "delete",
+  request: {
+    params: ExerciseTagParamsSchema,
+  },
+  tags,
+  responses: {
+    [HttpStatusCodes.NO_CONTENT]: {
+      description: "Tag removed from exercise",
+    },
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "Exercise, tag, or association not found",
+    ),
+  },
+});
+
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
+export type AddTagRoute = typeof addTag;
+export type RemoveTagRoute = typeof removeTag;
