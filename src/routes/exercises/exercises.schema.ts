@@ -44,4 +44,5 @@ export const insertExerciseSchema = createInsertSchema(exercises, {
     },
   ); // omit means that these fields will not be accepted by the API when creating a new exercise because the server will handle setting them.
 
+// TODO: Patch still seems to require name to be present, I want all fields to be optional on the patch route.
 export const patchExerciseSchema = insertExerciseSchema.partial();

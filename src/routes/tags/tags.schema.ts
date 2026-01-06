@@ -39,3 +39,7 @@ export const insertTagSchema = createInsertSchema(tags, {
   ); // omit means that these fields will not be accepted by the API when creating a new tag because the server will handle setting them.
 
 export const patchTagSchema = insertTagSchema.partial();
+
+// TODO: I think I'll need to rework tags to use a tags_exercises join table:
+// Right now, each exercise can only have one tag because of the tagId foreign key in exercises.
+// But I want each exercise to be able to have multiple tags. So I'll need to create a new table tags_exercises with exerciseId and tagId foreign keys.
